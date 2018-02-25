@@ -49,18 +49,26 @@ namespace elastic_centre_method_cs
 
             Console.WriteLine("Point load X:");
 
-            PointLoad pl = new PointLoad(-3.999, 5);
+            PointLoad pl = new PointLoad(3.99, 5);
             foreach(var load in pl.ToPointLoads(vault))
             {
                 Console.WriteLine(load.x);
             }
 
-            Console.WriteLine("X list");
+            Console.WriteLine("MidSegX list");
 
-            foreach(var x in vault.MidSegmentX)
+            foreach(var x in vault.Coord.MidSegmentX)
             {
                 Console.WriteLine(x);
             }
+
+			Console.WriteLine("SegX list");
+
+			foreach (var x in vault.Coord.SegmentX)
+			{
+				Console.WriteLine(x);
+			}
+
 
             Console.ReadLine();
 		}

@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{F6218BC2-F5F3-42AB-AFC4-E7C6F4BAE379}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>elastic_centre_method_cs</RootNamespace>
-    <AssemblyName>elastic_centre_method_cs</AssemblyName>
+    <RootNamespace>archicomp_cli</RootNamespace>
+    <AssemblyName>archicomp</AssemblyName>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>

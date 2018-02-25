@@ -4,72 +4,78 @@ using System.Linq;
 
 using MathNet.Numerics;
 
+using libarchicomp.structure;
 using libarchicomp.utils;
 using Constants = libarchicomp.utils.Constants;
 
 namespace libarchicomp.vaults
 {
-    public interface IPoints
-    {
-        Point Start { get; }
-        Point End { get; }
-        Point ElasticCenter { get; }
-        List<Point> MidSegment { get;}
-        List<Point> Curve { get; }
-    }
-
-    public interface IIntegrals
-    {
-        double XSq { get; }
-        double YSq { get; }
-    }
-
-    public interface ICompute
-    {
-        Point ElasticCenter();
-        double IntXSq();
-        double IntYSq();
-    }
-
-    public abstract class Vault : IStructure, IPoints, IIntegrals, ICompute
+	public interface IVaultPoints : IPoints
 	{
-        // Constructors
-        public Vault(
-            double w, 
-            double h, 
-            double d, 
-            double t, 
-            int N, 
-            Restraint restraint
-        )
-        {
-            this.w = w;
-            this.h = h;
-            this.d = d;
-            this.t = t;
-            this.N = N;
-            this.restraint = restraint;
-        }
+		Point ElasticCenter { get; }
+	}
 
-        // Properties
-        public double w { get; private set; }
-        public double h { get; private set; }
-        public double d { get; private set; }
-        public double t { get; private set; }
-        public int N { get; private set; }
-        public Restraint restraint { get; private set; }
-        public double L { get { return XToLength(w / 2); } }
+	public interface IIntegrals
+	{
+		double XSq { get; }
+		double YSq { get; }
+	}
 
-        protected double Prec { get { return Constants.Prec; } }
+	public interface ICompute
+	{
+		Point ElasticCenter();
+		double IntXSq();
+		double IntYSq();
+	}
 
-        protected ICompute Compute
-        {
-            get
-            {
-                return this;
-            }
-        }
-        public IPoints Points
+	public abstract class Vault : IStructure, IVaultPoints, IIntegrals, ICompute
+	{
+		// Constructors
+		public Vault(
+			double w,
+			double h,
+			double d,
+			double t,
+			int N,
+			Restraint restraint
+		)
+		{
+			this.w = w;
+			this.h = h;
+			this.d = d;
+			this.t = t;
+			this.N = N;
+			this.restraint = restraint;
+		}
+
+		// Properties
+		public double w { get; private set; }
+		public double h { get; private set; }
+		public double d { get; private set; }
+		public double t { get; private set; }
+		public int N { get; private set; }
+		public Restraint restraint { get; private set; }
+		public double L { get { return XToLength(w / 2); } }
+
+		protected double Prec { get { return Constants.Prec; } }
+
+		protected ICompute Compute
+		{
+			get
+			{
+				return this;
+			}
+		}
+
+		public ICoord Coord
+		{
+			get
+			{
+				return this;
+			}
+		}
+
+        public IVaultPoints Points
         {
             get
             {
@@ -104,7 +110,7 @@ namespace libarchicomp.vaults
         }
 
         private Point _ElasticCenter = null;
-        Point IPoints.ElasticCenter
+        Point IVaultPoints.ElasticCenter
         {
             get
             {
@@ -133,8 +139,23 @@ namespace libarchicomp.vaults
             return new Point(xcoord, ycoord);
         }
 
+		private List<double> _SegmentX = null;
+		List<double> ICoord.SegmentX
+		{
+			get
+			{
+				if (_SegmentX == null)
+                {
+                    _SegmentX =
+                        (from i in Enumerable.Range(0, N+1)
+						 select LengthToX(L / N* i)).ToList();
+				}
+                return _SegmentX;
+            }
+        }
+
         private List<double> _MidSegmentX = null;
-        public List<double> MidSegmentX
+        List<double> ICoord.MidSegmentX
         {
             get
             {
@@ -156,7 +177,7 @@ namespace libarchicomp.vaults
                 if (_MidSegment == null)
                 {
                     _MidSegment =
-                        (from x in MidSegmentX
+                        (from x in Coord.MidSegmentX
                          select new Point(x, F(x))).ToList();
                 }
                 return _MidSegment;

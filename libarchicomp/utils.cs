@@ -12,11 +12,6 @@ namespace libarchicomp.utils
 
     public enum Restraint { Fixed, Pinned };
 
-    public interface IStructure
-    {
-        List<double> MidSegmentX { get; }
-    }
-
     public class StaticMethods
     {
         public static IEnumerable<T> accumulate<T>(

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using libarchicomp.utils;
+using libarchicomp.structure;
 
 
 namespace libarchicomp
@@ -31,24 +31,30 @@ namespace libarchicomp
         }
 
         public double x { get; }
-        public double Force { get; }
+		public double Force { get; }
 
-        public List<PointLoad> ToPointLoads(IStructure Structure)
-        {
-            List<double> XList = Structure.MidSegmentX;
-            Func<int, double> key = i => Math.Abs(x - XList[i]);
-            int index = Enumerable.Range(0, XList.Count).OrderBy(key).First();
-            return new List<PointLoad>{ new PointLoad(XList[index], Force) };
+		public List<PointLoad> ToPointLoads(IStructure Structure)
+		{
+			double loc = Structure.MidSegmentX.Aggregate(
+				(u, v) => Math.Abs(u - x) < Math.Abs(v - x) ? u : v
+			);
+			return new List<PointLoad>{ new PointLoad(loc, Force) };
         }
     }
 
 
     public class DistributedLoad : ILoad
     {
-        public DistributedLoad()
+        public DistributedLoad(Func<double, double> load, double start, double end)
         {
-
+			Load = load;
+			Start = start;
+			End = end;
         }
+
+		Func<double, double> Load { get; }
+		double Start { get; }
+		double End { get; }
 
         public List<PointLoad> ToPointLoads(IStructure Structure)
         {
