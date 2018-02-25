@@ -8,7 +8,7 @@ using CatenaryVault = libarchicomp.vaults.CatenaryVault;
 using GenericVault = libarchicomp.vaults.GenericVault;
 using LoadCase = libarchicomp.LoadCase;
 
-namespace elastic_centre_method_cs
+namespace archicomp_cli
 {
 	class MainClass
 	{
