@@ -51,5 +51,11 @@ Global
 		$7.String = T
 		$6.RequiredSuffixes = $8
 		$8.String = Exception
+		$0.TextStylePolicy = $9
+		$9.FileWidth = 80
+		$9.TabsToSpaces = True
+		$9.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $10
+		$10.scope = text/x-csharp
 	EndGlobalSection
 EndGlobal

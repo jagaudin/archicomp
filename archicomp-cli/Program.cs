@@ -6,7 +6,8 @@ using static libarchicomp.utils.StaticMethods;
 using utils = libarchicomp.utils;
 using CatenaryVault = libarchicomp.vaults.CatenaryVault;
 using GenericVault = libarchicomp.vaults.GenericVault;
-using LoadCase = libarchicomp.LoadCase;
+using LoadCase = libarchicomp.vaults.VaultLoadCase;
+using PointLoad = libarchicomp.vaults.VaultPointLoad;
 
 namespace archicomp_cli
 {
@@ -45,7 +46,7 @@ namespace archicomp_cli
             Console.WriteLine(genvault.XToLength(4));
             Console.WriteLine(genvault.Points.ElasticCenter);
 
-            var loadcase = new LoadCase(vault);
+			var loadcase = new LoadCase(vault);
 
             Console.WriteLine("Point load X:");
 

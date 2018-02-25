@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using static System.Math;
 using System.Collections.Generic;
 
@@ -14,6 +15,18 @@ namespace libarchicomp.utils
 
     public class StaticMethods
     {
+        public static double ClosestValue(double x, List<double> list)
+        {
+            return list.Aggregate(
+                (u, v) => Abs(u - x) < Abs(v - x) ? u : v
+            );
+        }
+
+        public static int ClosestValue(int x, List<int> list)
+        {
+            return ClosestValue(x, list);
+        }
+
         public static IEnumerable<T> accumulate<T>(
             IEnumerable<T> enumerable, 
             Func<T, T, T> func, 
