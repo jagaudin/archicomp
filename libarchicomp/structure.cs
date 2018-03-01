@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using libarchicomp.utils;
 
+using MathNet.Spatial.Euclidean;
 
 namespace libarchicomp.structure
 {
@@ -12,10 +12,10 @@ namespace libarchicomp.structure
 
 	public interface IPoints
 	{
-		Point Start { get; }
-		Point End { get; }
-		List<Point> MidSegment { get; }
-		List<Point> Curve { get; }
+		Point3D Start { get; }
+		Point3D End { get; }
+		List<Point3D> MidSegment { get; }
+		List<Point3D> Curve { get; }
 	}
 
 	public interface IStructure: ICoord, IPoints

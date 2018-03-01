@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MathNet.Numerics;
+using MathNet.Spatial.Euclidean;
 
 using libarchicomp.structure;
 using libarchicomp.utils;
@@ -12,7 +13,7 @@ namespace libarchicomp.vaults
 {
 	public interface IVaultPoints : IPoints
 	{
-		Point ElasticCenter { get; }
+		Point3D ElasticCenter { get; }
 	}
 
 	public interface IIntegrals
@@ -23,7 +24,7 @@ namespace libarchicomp.vaults
 
 	public interface ICompute
 	{
-		Point ElasticCenter();
+		Point3D ElasticCenter();
 		double IntXSq();
 		double IntYSq();
 	}
@@ -83,38 +84,38 @@ namespace libarchicomp.vaults
             }
         }
 
-        private Point _Start = null;
-        Point IPoints.Start
+        private Point3D _Start = Point3D.NaN;
+        Point3D IPoints.Start
         {
             get
             {
-                if (_Start == null)
+                if (_Start.IsNaN())
                 {
-                    _Start = new Point(-w / 2, 0);
+                    _Start = new Point3D(-w / 2, 0, 0);
                 }
                 return _Start;
             }
         }
 
-        private Point _End = null;
-        Point IPoints.End
+        private Point3D _End = Point3D.NaN;
+        Point3D IPoints.End
         {
             get
             {
-                if (_End == null)
+                if (_End.IsNaN())
                 {
-                    _End = new Point(-w / 2, 0);
+                    _End = new Point3D(-w / 2, 0, 0);
                 }
                 return _End;
             }
         }
 
-        private Point _ElasticCenter = null;
-        Point IVaultPoints.ElasticCenter
+        private Point3D _ElasticCenter = Point3D.NaN;
+        Point3D IVaultPoints.ElasticCenter
         {
             get
             {
-                if (_ElasticCenter == null)
+                if (_ElasticCenter.IsNaN())
                 {
                     _ElasticCenter = Compute.ElasticCenter();
                 }
@@ -122,7 +123,7 @@ namespace libarchicomp.vaults
             }
         }
 
-        Point ICompute.ElasticCenter()
+        Point3D ICompute.ElasticCenter()
         {
             double xcoord = Integrate.OnClosedInterval(
                 x => x * dL(x) / L,
@@ -136,7 +137,7 @@ namespace libarchicomp.vaults
                 w / 2,
                 Prec
             );
-            return new Point(xcoord, ycoord);
+            return new Point3D(xcoord, ycoord, 0);
         }
 
 		private List<double> _SegmentX = null;
@@ -169,8 +170,8 @@ namespace libarchicomp.vaults
             }
         }
 
-        private List<Point> _MidSegment = null;
-        List<Point> IPoints.MidSegment
+        private List<Point3D> _MidSegment = null;
+        List<Point3D> IPoints.MidSegment
         {
             get
             {
@@ -178,20 +179,20 @@ namespace libarchicomp.vaults
                 {
                     _MidSegment =
                         (from x in Coord.MidSegmentX
-                         select new Point(x, F(x))).ToList();
+                         select new Point3D(x, F(x), 0)).ToList();
                 }
                 return _MidSegment;
             }
         }
 
-        private List<Point> _Curve = null;
-        List<Point> IPoints.Curve
+        private List<Point3D> _Curve = null;
+        List<Point3D> IPoints.Curve
         {
             get
             {
                 if (_Curve == null)
                 {
-                    _Curve = new List<Point>();
+                    _Curve = new List<Point3D>();
                     _Curve.Add(Points.Start);
                     _Curve.AddRange(Points.MidSegment);
                     _Curve.Add(Points.End);
@@ -227,7 +228,7 @@ namespace libarchicomp.vaults
             switch (restraint)
             {
                 case Restraint.Fixed:
-                    double Ox = Points.ElasticCenter.x;
+                    double Ox = Points.ElasticCenter.X;
                     func = u => Math.Pow(u - Ox, 2) * dL(u);
                     break;
 
@@ -261,7 +262,7 @@ namespace libarchicomp.vaults
             switch (restraint)
             {
                 case Restraint.Fixed:
-                    double Oy = Points.ElasticCenter.y;
+                    double Oy = Points.ElasticCenter.Y;
                     func = u => Math.Pow(F(u) - Oy, 2) * dL(u);
                     break;
 

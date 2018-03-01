@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Spatial.Euclidean;
 
 using libarchicomp.structure;
 
@@ -20,9 +21,13 @@ namespace libarchicomp.loadcase
     }
 
 	public abstract class PointLoad : ILoad
-	{ 
-		public double x { get; protected set; }
-		public double Force { get; protected set; }
+	{
+        public double x { get; protected set; }
+        public double y { get; protected set; }
+        public double z { get; protected set; }
+
+        public double Force { get; protected set; }
+        public Vector3D Direction { get; protected set; }
 
 		public abstract List<PointLoad> ToPointLoads(IStructure structure);
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
+using MathNet.Spatial.Euclidean;
 using MathNet.Numerics;
 using static MathNet.Numerics.Trig;
 
@@ -96,10 +97,10 @@ namespace libarchicomp.vaults
 
         /* End methods */
 
-        Point ICompute.ElasticCenter()
+        Point3D ICompute.ElasticCenter()
         {
             double ycoord = ((h + a) * L - a / 2 * (a * Sinh(w / a) + w)) / L;
-            return new Point(0, ycoord);
+            return new Point3D(0, ycoord, 0);
         }
 
         double ICompute.IntXSq()
@@ -117,7 +118,7 @@ namespace libarchicomp.vaults
             switch (restraint)
             {
                 case Restraint.Fixed:
-                    double Oy = Points.ElasticCenter.y;
+                    double Oy = Points.ElasticCenter.Y;
                     return func(Oy);
 
                 case Restraint.Pinned:

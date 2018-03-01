@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using MathNet.Spatial.Euclidean;
+
 using static libarchicomp.utils.StaticMethods;
 using libarchicomp.structure;
 using libarchicomp.loadcase;
@@ -18,16 +20,17 @@ namespace libarchicomp.vaults
 
 	public class VaultPointLoad : PointLoad
 	{
-		public VaultPointLoad(double x, double force)
+		public VaultPointLoad(double x, double force, Vector3D direction)
 		{
 			this.x = x;
 			Force = force;
+            Direction = direction;
 		}
 
 		public override List<PointLoad> ToPointLoads(IStructure structure)
 		{
             double loc = ClosestValue(x, structure.MidSegmentX);
-			return new List<PointLoad> { new VaultPointLoad(loc, Force) };
+			return new List<PointLoad> { new VaultPointLoad(loc, Force, Direction) };
 		}
 	}
 
