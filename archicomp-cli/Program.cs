@@ -52,10 +52,10 @@ namespace archicomp_cli
 
             Console.WriteLine("Point load X:");
 
-            PointLoad pl = new PointLoad(3.99, 5, new Vector3D(0, 0, -1));
+            PointLoad pl = new PointLoad(3.99, new Vector3D(0, 0, -5));
             foreach(var load in pl.ToPointLoads(vault))
             {
-                Console.WriteLine(load.x);
+                Console.WriteLine(load.Loc.X);
             }
 
             Console.WriteLine("MidSegX list");

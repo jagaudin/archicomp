@@ -54,8 +54,8 @@ namespace libarchicomp.utils
         {
             return (
                 double.IsNaN(point.X) || 
-                double.IsNaN(point.X) || 
-                double.IsNaN(point.X)
+                double.IsNaN(point.Y) || 
+                double.IsNaN(point.Z)
             );
         }
     }

@@ -22,12 +22,8 @@ namespace libarchicomp.loadcase
 
 	public abstract class PointLoad : ILoad
 	{
-        public double x { get; protected set; }
-        public double y { get; protected set; }
-        public double z { get; protected set; }
-
-        public double Force { get; protected set; }
-        public Vector3D Direction { get; protected set; }
+        public Point3D Loc { get; protected set; }
+        public Vector3D Force { get; protected set; }
 
 		public abstract List<PointLoad> ToPointLoads(IStructure structure);
 	}
@@ -48,7 +44,7 @@ namespace libarchicomp.loadcase
         {
             get
             {
-                return VerticalLoads.Sum(pload => pload.Force);
+                return VerticalLoads.Sum(pload => pload.Force.DotProduct(new Vector3D(0, 1, 0)));
             }
         }
 
@@ -56,7 +52,7 @@ namespace libarchicomp.loadcase
         {
             get
             {
-                return HorizontalLoads.Sum(pload => pload.Force);
+                return HorizontalLoads.Sum(pload => pload.Force.DotProduct(new Vector3D(1, 0, 0)));
             }
         }
     }

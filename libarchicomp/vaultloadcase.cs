@@ -20,17 +20,16 @@ namespace libarchicomp.vaults
 
 	public class VaultPointLoad : PointLoad
 	{
-		public VaultPointLoad(double x, double force, Vector3D direction)
+		public VaultPointLoad(double x, Vector3D force)
 		{
-			this.x = x;
+			Loc = new Point3D(x, 0, 0);
 			Force = force;
-            Direction = direction;
 		}
 
 		public override List<PointLoad> ToPointLoads(IStructure structure)
 		{
-            double loc = ClosestValue(x, structure.MidSegmentX);
-			return new List<PointLoad> { new VaultPointLoad(loc, Force, Direction) };
+            double loc = ClosestValue(Loc.X, structure.MidSegmentX);
+			return new List<PointLoad> {  };
 		}
 	}
 
