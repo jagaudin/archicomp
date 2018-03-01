@@ -56,7 +56,7 @@ namespace libarchicomp.vaults
         }
 
         double ICatenary.ComputeCoeff()
-        // #TODO: refine bounds?
+        // TODO: refine bounds?
         {
             double[] bound = { w / scope, w * scope };
             Debug.Assert(F(w / 2, bound[0]) * F(w / 2, bound[1]) < 0);
@@ -90,17 +90,17 @@ namespace libarchicomp.vaults
             return a * (Sinh(w / 2 / a) + Sinh(x / a));
         }
 
-        public override double LengthToX(double len)
+        public override double LengthToX(double arcLength)
         {
-            return a * Asinh((len - a * Sinh(w / 2 / a)) / a);
+            return a * Asinh((arcLength - a * Sinh(w / 2 / a)) / a);
         }
 
         /* End methods */
 
         Point3D ICompute.ElasticCenter()
         {
-            double ycoord = ((h + a) * L - a / 2 * (a * Sinh(w / a) + w)) / L;
-            return new Point3D(0, ycoord, 0);
+            double zcoord = ((h + a) * L - a / 2 * (a * Sinh(w / a) + w)) / L;
+            return new Point3D(0, 0, zcoord);
         }
 
         double ICompute.IntXSq()
@@ -108,7 +108,7 @@ namespace libarchicomp.vaults
             return Math.Pow(w, 2) * L / 4 - 2 * a * (w * (h + a) - a * L);
         }
 
-        double ICompute.IntYSq()
+        double ICompute.IntZSq()
         {
             Func<double, double> func = u =>
                 Math.Pow(h + a - u, 2) * L
@@ -118,8 +118,8 @@ namespace libarchicomp.vaults
             switch (restraint)
             {
                 case Restraint.Fixed:
-                    double Oy = Points.ElasticCenter.Y;
-                    return func(Oy);
+                    double Oz = Points.ElasticCenter.Z;
+                    return func(Oz);
 
                 case Restraint.Pinned:
                     return func(0);

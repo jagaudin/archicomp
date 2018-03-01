@@ -44,7 +44,9 @@ namespace libarchicomp.loadcase
         {
             get
             {
-                return VerticalLoads.Sum(pload => pload.Force.DotProduct(new Vector3D(0, 1, 0)));
+                return VerticalLoads.Sum(
+                    pload => pload.Force.DotProduct(UnitVector3D.ZAxis)
+                );
             }
         }
 
@@ -52,7 +54,9 @@ namespace libarchicomp.loadcase
         {
             get
             {
-                return HorizontalLoads.Sum(pload => pload.Force.DotProduct(new Vector3D(1, 0, 0)));
+                return HorizontalLoads.Sum(
+                    pload => pload.Force.DotProduct(UnitVector3D.XAxis)
+                );       
             }
         }
     }

@@ -30,6 +30,30 @@ namespace libarchicomp.utils
             return ClosestValue(x, list);
         }
 
+        public static double PreviousValue(double x, List<double>list)
+        {
+            return list.Aggregate(
+                (u, v) => (u > v) || (v > x) ? u : v // TODO
+            );
+        }
+
+        public static int PreviousValue(int x, List<int> list)
+        {
+            return PreviousValue(x, list);
+        }
+
+        public static double NextValue(double x, List<double> list)
+        {
+            return list.Aggregate(
+                (u, v) => (u > v) || (v > x) ? u : v //TODO
+            );
+        }
+
+        public static int NextValue(int x, List<int> list)
+        {
+            return NextValue(x, list);
+        }
+
         public static IEnumerable<T> accumulate<T>(
             IEnumerable<T> enumerable, 
             Func<T, T, T> func, 
@@ -53,8 +77,8 @@ namespace libarchicomp.utils
         public static bool IsNaN(this Point3D point)
         {
             return (
-                double.IsNaN(point.X) || 
-                double.IsNaN(point.Y) || 
+                double.IsNaN(point.X) ||
+                double.IsNaN(point.Y) ||
                 double.IsNaN(point.Z)
             );
         }

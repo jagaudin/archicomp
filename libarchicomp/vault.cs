@@ -19,14 +19,14 @@ namespace libarchicomp.vaults
 	public interface IIntegrals
 	{
 		double XSq { get; }
-		double YSq { get; }
+        double ZSq { get; }
 	}
 
 	public interface ICompute
 	{
 		Point3D ElasticCenter();
 		double IntXSq();
-		double IntYSq();
+		double IntZSq();
 	}
 
 	public abstract class Vault : IStructure, IVaultPoints, IIntegrals, ICompute
@@ -131,13 +131,13 @@ namespace libarchicomp.vaults
                 w / 2,
                 Prec
             );
-            double ycoord = Integrate.OnClosedInterval(
+            double zcoord = Integrate.OnClosedInterval(
                 x => F(x) * dL(x) / L,
                 -w / 2,
                 w / 2,
                 Prec
             );
-            return new Point3D(xcoord, ycoord, 0);
+            return new Point3D(xcoord, 0, zcoord);
         }
 
 		private List<double> _SegmentX = null;
@@ -179,7 +179,7 @@ namespace libarchicomp.vaults
                 {
                     _MidSegment =
                         (from x in Coord.MidSegmentX
-                         select new Point3D(x, F(x), 0)).ToList();
+                         select new Point3D(x, 0, F(x))).ToList();
                 }
                 return _MidSegment;
             }
@@ -243,27 +243,27 @@ namespace libarchicomp.vaults
             return Integrate.OnClosedInterval(func, -w / 2, w / 2, Prec);
         }
 
-        private double _YSq = double.NaN;
-        double IIntegrals.YSq
+        private double _ZSq = double.NaN;
+        double IIntegrals.ZSq
         {
             get
             {
-                if (double.IsNaN(_YSq))
+                if (double.IsNaN(_ZSq))
                 {
-                    _YSq = Compute.IntYSq();
+                    _ZSq = Compute.IntZSq();
                 }
-                return _YSq;
+                return _ZSq;
             }
         }
 
-        double ICompute.IntYSq()
+        double ICompute.IntZSq()
         {
             Func<double, double> func;
             switch (restraint)
             {
                 case Restraint.Fixed:
-                    double Oy = Points.ElasticCenter.Y;
-                    func = u => Math.Pow(F(u) - Oy, 2) * dL(u);
+                    double Oz = Points.ElasticCenter.Z;
+                    func = u => Math.Pow(F(u) - Oz, 2) * dL(u);
                     break;
 
                 case Restraint.Pinned:
