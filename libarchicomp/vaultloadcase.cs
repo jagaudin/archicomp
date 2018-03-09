@@ -28,19 +28,23 @@ namespace libarchicomp.vaults
         {
         }
 
-		public override List<PointLoad> ProjectedLoads(IStructure structure)
-		{
-            if (!(structure is Vault))
-                return new List<PointLoad>();
+        public override List<PointLoad> ProjectedLoads<T>(T structure)
+        {
+            if (structure is Vault)
+                return ProjectedLoadsOnVault(structure as Vault);
+            return new List<PointLoad>();
+        }
 
-            double loc = ClosestValue(Loc.X, structure.MidSegmentX);
+        public List<PointLoad> ProjectedLoadsOnVault(Vault vault)
+        { 
+            double loc = ClosestValue(Loc.X, (vault as IStructure).MidSegmentX);
 			return new List<PointLoad> {
                 new VaultPointLoad(
-                    new Point3D(loc, 0, (structure as Vault).F(loc)), 
+                    new Point3D(loc, 0, vault.F(loc)), 
                     Force.ProjectOn(UnitVector3D.XAxis)
                 ),
                 new VaultPointLoad(
-                    new Point3D(loc, 0, (structure as Vault).F(loc)),
+                    new Point3D(loc, 0, vault.F(loc)),
                     Force.ProjectOn(UnitVector3D.ZAxis)
                 )
             };
@@ -48,9 +52,9 @@ namespace libarchicomp.vaults
 	}
 
 
-	public class DistributedLoad : ILoad
+	public class VaultDistributedLoad : IDiscretizable
 	{
-		public DistributedLoad(Func<double, Vector3D> load, double start, double end)
+		public VaultDistributedLoad(Func<double, Vector3D> load, double start, double end)
         {
             Load = load;
 			Start = start;
@@ -61,14 +65,16 @@ namespace libarchicomp.vaults
 		double Start { get; }
 		double End { get; }
 
-		public List<PointLoad> ProjectedLoads(IStructure structure)
+        public List<PointLoad> ProjectedLoads<T>(T structure) where T : IStructure
+        {
+            if (structure is Vault)
+                return ProjectedLoadsOnVault(structure as Vault);
+            return new List<PointLoad>();
+        }
+
+        public List<PointLoad> ProjectedLoadsOnVault(Vault vault)
 		{
             var res = new List<PointLoad>();
-
-            if (!(structure is Vault))
-                return res;
-
-            
 
             return  res;
         }

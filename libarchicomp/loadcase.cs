@@ -15,12 +15,12 @@ namespace libarchicomp.loadcase
         double TotalHorizontalLoad { get; }
     }
 
-    public interface ILoad
+    public interface IDiscretizable
     {
-        List<PointLoad> ProjectedLoads(IStructure Structure);
+        List<PointLoad> ProjectedLoads<T>(T Structure) where T : IStructure;
     }
 
-	public abstract class PointLoad : ILoad
+	public abstract class PointLoad : IDiscretizable
 	{
         public PointLoad(Point3D loc, Vector3D force)
         {
@@ -31,8 +31,14 @@ namespace libarchicomp.loadcase
         public Point3D Loc { get; protected set; }
         public Vector3D Force { get; protected set; }
 
-		public abstract List<PointLoad> ProjectedLoads(IStructure structure);
+		public abstract List<PointLoad> ProjectedLoads<T>(T structure) where T : IStructure;
 	}
+
+    public abstract class DistributedLoad : IDiscretizable
+    {
+
+        public abstract List<PointLoad> ProjectedLoads<T>(T Structure) where T : IStructure;
+    }
 
     public abstract class LoadCase : IResults
     {
