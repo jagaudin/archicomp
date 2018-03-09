@@ -30,28 +30,10 @@ namespace libarchicomp.utils
             return ClosestValue(x, list);
         }
 
-        public static double PreviousValue(double x, List<double>list)
-        {
-            return list.Aggregate(
-                (u, v) => (u > v) || (v > x) ? u : v // TODO
-            );
-        }
 
-        public static int PreviousValue(int x, List<int> list)
+        public static List<double> ValuesBetween(double start, double end, List<double> list)
         {
-            return PreviousValue(x, list);
-        }
-
-        public static double NextValue(double x, List<double> list)
-        {
-            return list.Aggregate(
-                (u, v) => (u > v) || (v > x) ? u : v //TODO
-            );
-        }
-
-        public static int NextValue(int x, List<int> list)
-        {
-            return NextValue(x, list);
+            return list.SkipWhile(u => u <= start).TakeWhile(u => u <= end).ToList();
         }
 
         public static IEnumerable<T> accumulate<T>(

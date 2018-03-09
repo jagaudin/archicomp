@@ -20,37 +20,58 @@ namespace libarchicomp.vaults
 
 	public class VaultPointLoad : PointLoad
 	{
-		public VaultPointLoad(double x, Vector3D force)
+		public VaultPointLoad(double x, Vector3D force): base(new Point3D(x, 0, 0), force)
 		{
-			Loc = new Point3D(x, 0, 0);
-			Force = force;
 		}
 
-		public override List<PointLoad> ToPointLoads(IStructure structure)
+        public VaultPointLoad(Point3D loc, Vector3D force) : base(loc, force)
+        {
+        }
+
+		public override List<PointLoad> ProjectedLoads(IStructure structure)
 		{
+            if (!(structure is Vault))
+                return new List<PointLoad>();
+
             double loc = ClosestValue(Loc.X, structure.MidSegmentX);
-			return new List<PointLoad> {  };
+			return new List<PointLoad> {
+                new VaultPointLoad(
+                    new Point3D(loc, 0, (structure as Vault).F(loc)), 
+                    Force.ProjectOn(UnitVector3D.XAxis)
+                ),
+                new VaultPointLoad(
+                    new Point3D(loc, 0, (structure as Vault).F(loc)),
+                    Force.ProjectOn(UnitVector3D.ZAxis)
+                )
+            };
 		}
 	}
 
 
 	public class DistributedLoad : ILoad
 	{
-		public DistributedLoad(Func<double, double> load, double start, double end)
-		{
-			Load = load;
+		public DistributedLoad(Func<double, Vector3D> load, double start, double end)
+        {
+            Load = load;
 			Start = start;
 			End = end;
 		}
 
-		Func<double, double> Load { get; }
+		Func<double, Vector3D> Load { get; }
 		double Start { get; }
 		double End { get; }
 
-		public List<PointLoad> ToPointLoads(IStructure Structure)
+		public List<PointLoad> ProjectedLoads(IStructure structure)
 		{
-			throw new NotImplementedException();
-		}
+            var res = new List<PointLoad>();
+
+            if (!(structure is Vault))
+                return res;
+
+            
+
+            return  res;
+        }
 	}
 
     public class VaultLoadCase : LoadCase, IVaultResults

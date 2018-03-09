@@ -17,15 +17,21 @@ namespace libarchicomp.loadcase
 
     public interface ILoad
     {
-        List<PointLoad> ToPointLoads(IStructure Structure);
+        List<PointLoad> ProjectedLoads(IStructure Structure);
     }
 
 	public abstract class PointLoad : ILoad
 	{
+        public PointLoad(Point3D loc, Vector3D force)
+        {
+            Loc = loc;
+            Force = force;
+        }
+
         public Point3D Loc { get; protected set; }
         public Vector3D Force { get; protected set; }
 
-		public abstract List<PointLoad> ToPointLoads(IStructure structure);
+		public abstract List<PointLoad> ProjectedLoads(IStructure structure);
 	}
 
     public abstract class LoadCase : IResults

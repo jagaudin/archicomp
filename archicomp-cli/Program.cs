@@ -72,6 +72,14 @@ namespace archicomp_cli
 				Console.WriteLine(x);
 			}
 
+            Console.WriteLine("Values betwwen:");
+            var res = ValuesBetween(-3.4, -2.9, vault.Coord.SegmentX);
+
+            foreach (var x in res)
+            {
+                Console.WriteLine(x);
+            }
+            
 
             Console.ReadLine();
 		}
