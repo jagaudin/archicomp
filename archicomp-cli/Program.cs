@@ -10,6 +10,8 @@ using CatenaryVault = libarchicomp.vaults.CatenaryVault;
 using GenericVault = libarchicomp.vaults.GenericVault;
 using LoadCase = libarchicomp.vaults.VaultLoadCase;
 using PointLoad = libarchicomp.vaults.VaultPointLoad;
+using DistributedLoadX = libarchicomp.vaults.VaultDistributedLoadOverX;
+using DistributedLoadZ = libarchicomp.vaults.VaultDistributedLoadOverZ;
 
 namespace archicomp_cli
 {
@@ -17,15 +19,8 @@ namespace archicomp_cli
 	{
         public static void Main(string[] args)
 	    {
-            Console.WriteLine("Hello World!");
             var v1 = new Vector3D(3.0, -9, 0);
             var v2 = new Vector3D(-2.0, 8.0, 0);
-            var v = v1 + v2;
-            Console.WriteLine("{0}: {1}", v, v.Length);
-            var p1 = new Point3D(3.0, -9, 0);
-            var p2 = new Point3D(-2.0, 8.0, 0);
-            var p = p1 + p2.ToVector3D();
-            Console.WriteLine("{0}: {1}", p, p.DistanceTo(p1));
             Vector3D[] l1 = { v1, v2 };
 
             foreach (Vector3D vec in accumulate(l1, ((vec1, vec2) => vec1 + vec2), new Vector3D(0, 0, 0)))
@@ -52,7 +47,7 @@ namespace archicomp_cli
             Console.WriteLine("Point load X:");
 
             PointLoad pl = new PointLoad(3.99, new Vector3D(0, 0, -5));
-            foreach (var load in pl.ProjectedLoads(vault))
+            foreach (var load in pl.Load.ToProjectedPointLoads(vault))
             {
                 Console.WriteLine(load.Loc.X);
             }
@@ -77,6 +72,19 @@ namespace archicomp_cli
             foreach (var x in res)
             {
                 Console.WriteLine(x);
+            }
+
+            //var udl1 = new DistributedLoadX(x => new Vector3D(1, 0, -3), -3, 3);
+
+            //foreach(var f in udl1.ToProjectedPointLoads(vault))
+            //{
+            //    Console.WriteLine(f);
+            //}
+            var udl2 = new DistributedLoadZ(z => new Vector3D(1, 0, 0), 0, 1);
+
+            foreach (var f in udl2.ToProjectedPointLoads(vault))
+            {
+                Console.WriteLine(f);
             }
 
 

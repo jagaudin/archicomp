@@ -3,11 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using MathNet.Spatial.Euclidean;
 
+using Constants = libarchicomp.utils.Constants;
 using libarchicomp.structure;
 
 
 namespace libarchicomp.loadcase
 {
+    public struct Boundaries
+    {
+        public Boundaries(double min, double max)
+        {
+            Min = min;
+            Max = max;
+        }
+
+        public double Min;
+        public double Max;
+    }
 
     public interface IResults
     {
@@ -15,14 +27,15 @@ namespace libarchicomp.loadcase
         double TotalHorizontalLoad { get; }
     }
 
-    public interface IDiscretizable
+    public interface IDiscretizableLoad<T> where T : IStructure
     {
-        List<PointLoad> ProjectedLoads<T>(T Structure) where T : IStructure;
+        List<PointLoad> ToProjectedPointLoads(T Structure);
     }
 
-	public abstract class PointLoad : IDiscretizable
-	{
-        public PointLoad(Point3D loc, Vector3D force)
+
+    public abstract class PointLoad 
+    {
+        protected PointLoad(Point3D loc, Vector3D force)
         {
             Loc = loc;
             Force = force;
@@ -31,26 +44,37 @@ namespace libarchicomp.loadcase
         public Point3D Loc { get; protected set; }
         public Vector3D Force { get; protected set; }
 
-		public abstract List<PointLoad> ProjectedLoads<T>(T structure) where T : IStructure;
-	}
+        public double Prec => Constants.Prec;
 
-    public abstract class DistributedLoad : IDiscretizable
-    {
-
-        public abstract List<PointLoad> ProjectedLoads<T>(T Structure) where T : IStructure;
+        public override string ToString() => (string.Format("Loc: {0}, Force: {1}", Loc.ToString(), Force.ToString()));
     }
 
-    public abstract class LoadCase : IResults
+
+    public abstract class DistributedLoad
     {
-        public LoadCase(IStructure structure)
+        public Func<Point3D, Vector3D> Force;
+        public Dictionary<UnitVector3D, Boundaries> Boundaries = 
+            new Dictionary<UnitVector3D, Boundaries>(){
+                {UnitVector3D.XAxis, default(Boundaries)},
+                {UnitVector3D.YAxis, default(Boundaries)},
+                {UnitVector3D.ZAxis, default(Boundaries)}
+        };
+
+        public double Prec => Constants.Prec;
+    }
+
+
+    public abstract class LoadCase<T> : IResults where T : IStructure
+    {
+        protected LoadCase(IStructure structure)
         {
             Structure = structure;
         }
 
         IStructure Structure;
 
-        List<PointLoad> VerticalLoads = new List<PointLoad>();
-		List<PointLoad> HorizontalLoads = new List<PointLoad>();
+        public List<PointLoad> VerticalLoads = new List<PointLoad>();
+		public List<PointLoad> HorizontalLoads = new List<PointLoad>();
 
         double IResults.TotalVerticalLoad
         {

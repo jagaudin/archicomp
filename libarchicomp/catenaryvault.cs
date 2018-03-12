@@ -32,15 +32,9 @@ namespace libarchicomp.vaults
 
         // Properties
 
-        private double scope { get { return Constants.Scope; } }
+        private double Scope => Constants.Scope;
 
-        private ICatenary Catenary
-        {
-            get
-            {
-                return this;
-            }
-        }
+        ICatenary Catenary => this;
 
         private double _a = double.NaN;
         public double a
@@ -58,7 +52,7 @@ namespace libarchicomp.vaults
         double ICatenary.ComputeCoeff()
         // TODO: refine bounds?
         {
-            double[] bound = { w / scope, w * scope };
+            double[] bound = { w / Scope, w * Scope };
             Debug.Assert(F(w / 2, bound[0]) * F(w / 2, bound[1]) < 0);
             return FindRoots.OfFunction(
                 a => F(w / 2, a),

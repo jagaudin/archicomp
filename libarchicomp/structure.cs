@@ -4,21 +4,26 @@ using MathNet.Spatial.Euclidean;
 
 namespace libarchicomp.structure
 {
-	public interface ICoord
+	public interface IStructure2DDiscretCoord
 	{
 		List<double> SegmentX { get; }
 		List<double> MidSegmentX { get; }
 	}
 
-	public interface IPoints
+	public interface IStructure2DDiscretePoints
 	{
 		Point3D Start { get; }
 		Point3D End { get; }
 		List<Point3D> MidSegment { get; }
-		List<Point3D> Curve { get; }
+		List<Point3D> Segment { get; }
 	}
 
-	public interface IStructure: ICoord, IPoints
+	public interface IStructure
 	{
 	}
+
+    public interface IDiscretizableStructure2D: IStructure, IStructure2DDiscretCoord, IStructure2DDiscretePoints
+    {
+        
+    }
 }

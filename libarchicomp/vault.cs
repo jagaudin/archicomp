@@ -11,7 +11,7 @@ using Constants = libarchicomp.utils.Constants;
 
 namespace libarchicomp.vaults
 {
-	public interface IVaultPoints : IPoints
+	public interface IVaultPoints : IStructure2DDiscretePoints
 	{
 		Point3D ElasticCenter { get; }
 	}
@@ -29,7 +29,7 @@ namespace libarchicomp.vaults
 		double IntZSq();
 	}
 
-	public abstract class Vault : IStructure, IVaultPoints, IIntegrals, ICompute
+	public abstract class Vault : IDiscretizableStructure2D, IVaultPoints, IIntegrals, ICompute
 	{
 		// Constructors
 		public Vault(
@@ -60,32 +60,14 @@ namespace libarchicomp.vaults
 
 		protected double Prec { get { return Constants.Prec; } }
 
-		protected ICompute Compute
-		{
-			get
-			{
-				return this;
-			}
-		}
+        protected ICompute Compute => this;
 
-		public ICoord Coord
-		{
-			get
-			{
-				return this;
-			}
-		}
+        public IStructure2DDiscretCoord Coord => this;
 
-        public IVaultPoints Points
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public IVaultPoints Points => this;
 
         private Point3D _Start = Point3D.NaN;
-        Point3D IPoints.Start
+        Point3D IStructure2DDiscretePoints.Start
         {
             get
             {
@@ -98,7 +80,7 @@ namespace libarchicomp.vaults
         }
 
         private Point3D _End = Point3D.NaN;
-        Point3D IPoints.End
+        Point3D IStructure2DDiscretePoints.End
         {
             get
             {
@@ -141,7 +123,7 @@ namespace libarchicomp.vaults
         }
 
 		private List<double> _SegmentX = null;
-		List<double> ICoord.SegmentX
+		List<double> IStructure2DDiscretCoord.SegmentX
 		{
 			get
 			{
@@ -156,7 +138,7 @@ namespace libarchicomp.vaults
         }
 
         private List<double> _MidSegmentX = null;
-        List<double> ICoord.MidSegmentX
+        List<double> IStructure2DDiscretCoord.MidSegmentX
         {
             get
             {
@@ -171,7 +153,7 @@ namespace libarchicomp.vaults
         }
 
         private List<Point3D> _MidSegment = null;
-        List<Point3D> IPoints.MidSegment
+        List<Point3D> IStructure2DDiscretePoints.MidSegment
         {
             get
             {
@@ -185,29 +167,22 @@ namespace libarchicomp.vaults
             }
         }
 
-        private List<Point3D> _Curve = null;
-        List<Point3D> IPoints.Curve
+        private List<Point3D> _Segment = null;
+        List<Point3D> IStructure2DDiscretePoints.Segment
         {
             get
             {
-                if (_Curve == null)
+                if (_Segment == null)
                 {
-                    _Curve = new List<Point3D>();
-                    _Curve.Add(Points.Start);
-                    _Curve.AddRange(Points.MidSegment);
-                    _Curve.Add(Points.End);
+                    _Segment = 
+                        (from x in Coord.SegmentX
+                         select new Point3D(x, 0, F(x))).ToList();
                 }
-                return _Curve;
+                return _Segment;
             }
         }
 
-        public IIntegrals Integrals
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public IIntegrals Integrals => this;
 
         private double _XSq = double.NaN;
         double IIntegrals.XSq
@@ -300,7 +275,7 @@ namespace libarchicomp.vaults
             );
         }
 
-        protected virtual double dL(double x)
+        public virtual double dL(double x)
         {
             return Math.Sqrt(1 + Math.Pow(DerivF(x), 2));
         }   
@@ -315,7 +290,8 @@ namespace libarchicomp.vaults
             double d, 
             double t, 
             int N, 
-            Restraint restraint) : base(w, h, d, t, N, restraint)
+            Restraint restraint) : 
+            base(w, h, d, t, N, restraint)
         {
             _F = F;
         }
