@@ -261,6 +261,24 @@ namespace libarchicomp.vaults
             return Differentiate.FirstDerivative(F, x);
         }
 
+        public virtual double InvF(double z)
+        {
+            if (Math.Abs(z-h) > 1E-3) // TODO Fix arbitrary value
+            {
+                return FindRoots.OfFunction(
+                    x => F(x) - z,
+                    0,
+                    w / 2
+                );
+            }
+            return 0;   
+        }
+
+        public virtual double DerivInvF(double z)
+        {
+            return Differentiate.FirstDerivative(InvF, z);
+        }
+
         public virtual double XToLength(double x)
         {
             return Integrate.OnClosedInterval(dL, -w / 2, x);
@@ -278,7 +296,12 @@ namespace libarchicomp.vaults
         public virtual double dL(double x)
         {
             return Math.Sqrt(1 + Math.Pow(DerivF(x), 2));
-        }   
+        }
+
+        public virtual double dLz(double z)
+        {
+            return Math.Abs(DerivInvF(z) * dL(InvF(z)));
+        }
     }
 
     public class GenericVault : Vault

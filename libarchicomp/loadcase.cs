@@ -52,7 +52,13 @@ namespace libarchicomp.loadcase
 
     public abstract class DistributedLoad
     {
-        public Func<Point3D, Vector3D> Force;
+        protected Func<Point3D, Vector3D> _Force;
+
+        public Vector3D Force(Point3D p)
+        {
+            return _Force(p);
+        }
+
         public Dictionary<UnitVector3D, Boundaries> Boundaries = 
             new Dictionary<UnitVector3D, Boundaries>(){
                 {UnitVector3D.XAxis, default(Boundaries)},

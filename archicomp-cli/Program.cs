@@ -28,12 +28,16 @@ namespace archicomp_cli
                 Console.WriteLine(vec);
             }
 
-            var vault = new CatenaryVault(8.0, 2.0, 1.0, 100.0, 10, Restraint.Fixed);
+            var vault = new CatenaryVault(8.0, 2.0, 1.0, 100.0, 100, Restraint.Fixed);
             Console.WriteLine(vault.a);
 
             Console.WriteLine(vault.L);
             Console.WriteLine(vault.XToLength(4));
             Console.WriteLine(vault.Points.ElasticCenter);
+
+            Console.WriteLine("InvF(0)");
+            Console.WriteLine(vault.InvF(0));
+            
 
             var genvault = new GenericVault(x => vault.F(x), 8.0, 2.0, 1.0, 100.0, 10, Restraint.Fixed);
 
@@ -80,7 +84,7 @@ namespace archicomp_cli
             //{
             //    Console.WriteLine(f);
             //}
-            var udl2 = new DistributedLoadZ(z => new Vector3D(1, 0, 0), 0, 1);
+            var udl2 = new DistributedLoadZ(z => new Vector3D(1, 0, 3), 1.5, 2);
 
             foreach (var f in udl2.ToProjectedPointLoads(vault))
             {

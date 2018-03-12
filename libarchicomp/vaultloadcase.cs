@@ -55,18 +55,23 @@ namespace libarchicomp.vaults
 	}
 
 
-    public abstract class VaultDistributedLoad : DistributedLoad, IDiscretizableLoad<Vault>
+    public abstract class VaultDistributedLoad : DistributedLoad
     {
         protected VaultDistributedLoad(Func<double, Vector3D> load, UnitVector3D axis, double start, double end)
         {
             Axis = axis;
-            Force = p => load(p.ToVector3D().DotProduct(Axis));
+            _Force = p => load(p.ToVector3D().DotProduct(Axis));
             Boundaries[Axis] = new Boundaries(start, end);
         }
 
         protected UnitVector3D Axis;
 
-        public List<PointLoad> DiscretizeForce(Func<double, double> force, Vault structure)
+        public Vector3D Force(double x)
+        {
+            return _Force((x * Axis).ToPoint3D());
+        }
+
+        public List<PointLoad> DiscretizeForce(Func<double, double> force, Vault structure, UnitVector3D projection)
         {
             var res = new List<PointLoad>();
             Boundaries bound = Boundaries[Axis];
@@ -74,39 +79,55 @@ namespace libarchicomp.vaults
             {
                 double coord_prev = structure.Points.Segment[i].ToVector3D().DotProduct(Axis);
                 double coord_next = structure.Points.Segment[i + 1].ToVector3D().DotProduct(Axis);
+
+                if (coord_prev > coord_next)
+                {
+                    var temp = coord_next;
+                    coord_next = coord_prev;
+                    coord_prev = temp;
+                }
                 
                 if (coord_next >= bound.Min && coord_prev <= bound.Max)
                 {
                     var point = structure.Points.MidSegment[i];
                     double min = Max(coord_prev, bound.Min);
                     double max = Min(coord_next, bound.Max);
+                    double force_integral;
 
-                    double force_integral = Integrate.OnClosedInterval(force, min, max);
-
+                    if (Abs(min - max) > Prec)
+                    {
+                        force_integral = Integrate.OnClosedInterval(force, min, max);
+                    }
+                    else
+                    {
+                        max = point.ToVector3D().DotProduct(Axis);
+                        force_integral = 2 * Integrate.OnClosedInterval(force, min, max);
+                    }
+                    
                     if (Abs(force_integral) > Prec)
                     {
-                        res.Add(new VaultPointLoad(point, force_integral * Axis));
+                        res.Add(new VaultPointLoad(point, force_integral * projection));
                     }
                 }
             }
             return res;
         }
-
-        public List<PointLoad> ToProjectedPointLoads(Vault structure)
-        {
-            var res = new List<PointLoad>();
-            res.AddRange(DiscretizeForce(x => Force(new Point3D(x, 0, 0)).DotProduct(XAxis) * structure.dL(x), structure));
-            res.AddRange(DiscretizeForce(x => Force(new Point3D(x, 0, 0)).DotProduct(ZAxis) * structure.dL(x), structure));
-            return res;
-        }
     }
 
 
-    public class VaultDistributedLoadOverX : VaultDistributedLoad
+    public class VaultDistributedLoadOverX : VaultDistributedLoad, IDiscretizableLoad<Vault>
     {
         public VaultDistributedLoadOverX(Func<double, Vector3D> load, double start, double end): 
             base(load, XAxis, start, end)
         {
+        }
+
+        public List<PointLoad> ToProjectedPointLoads(Vault structure)
+        {
+            var res = new List<PointLoad>();
+            res.AddRange(DiscretizeForce(x => Force(x).DotProduct(XAxis) * structure.dL(x), structure, XAxis));
+            res.AddRange(DiscretizeForce(x => Force(x).DotProduct(ZAxis) * structure.dL(x), structure, ZAxis));
+            return res;
         }
     }
 
@@ -115,6 +136,14 @@ namespace libarchicomp.vaults
         public VaultDistributedLoadOverZ(Func<double, Vector3D> load, double start, double end) :
             base(load, ZAxis, start, end)
         {
+        }
+
+        public List<PointLoad> ToProjectedPointLoads(Vault structure)
+        {
+            var res = new List<PointLoad>();
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(XAxis) * structure.dLz(z), structure, XAxis)); // TODO: Incorrect dL(z) != dL(x)
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(ZAxis) * structure.dLz(z), structure, ZAxis)); // TODO: Incorrect dL(z) != dL(x)
+            return res;
         }
     }
 
