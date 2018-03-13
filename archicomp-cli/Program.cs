@@ -10,8 +10,8 @@ using CatenaryVault = libarchicomp.vaults.CatenaryVault;
 using GenericVault = libarchicomp.vaults.GenericVault;
 using LoadCase = libarchicomp.vaults.VaultLoadCase;
 using PointLoad = libarchicomp.vaults.VaultPointLoad;
-using DistributedLoadX = libarchicomp.vaults.VaultDistributedLoadOverX;
-using DistributedLoadZ = libarchicomp.vaults.VaultDistributedLoadOverZ;
+using DistributedLoadX = libarchicomp.vaults.VaultDLoadOverXByLength;
+using DistributedLoadZ = libarchicomp.vaults.VaultDLoadOverZ;
 
 namespace archicomp_cli
 {
@@ -36,7 +36,7 @@ namespace archicomp_cli
             Console.WriteLine(vault.Points.ElasticCenter);
 
             Console.WriteLine("InvF(0)");
-            Console.WriteLine(vault.InvF(0));
+            Console.WriteLine(vault.DerivInvF(1.9999999999999));
             
 
             var genvault = new GenericVault(x => vault.F(x), 8.0, 2.0, 1.0, 100.0, 10, Restraint.Fixed);
@@ -84,7 +84,7 @@ namespace archicomp_cli
             //{
             //    Console.WriteLine(f);
             //}
-            var udl2 = new DistributedLoadZ(z => new Vector3D(1, 0, 3), 1.5, 2);
+            var udl2 = new DistributedLoadZ(z => new Vector3D(1, 0, 3*(2-z)), .9, 2);
 
             foreach (var f in udl2.ToProjectedPointLoads(vault))
             {

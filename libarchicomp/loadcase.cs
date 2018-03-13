@@ -70,17 +70,30 @@ namespace libarchicomp.loadcase
     }
 
 
-    public abstract class LoadCase<T> : IResults where T : IStructure
+    public abstract class DiscreteLoadCase<T> : IResults where T : IStructure
     {
-        protected LoadCase(IStructure structure)
+        protected DiscreteLoadCase(IStructure structure, List<IDiscretizableLoad<T>> loadinput)
         {
             Structure = structure;
+            LoadInput = loadinput;
         }
 
         IStructure Structure;
+        List<IDiscretizableLoad<T>> LoadInput;
 
-        public List<PointLoad> VerticalLoads = new List<PointLoad>();
-		public List<PointLoad> HorizontalLoads = new List<PointLoad>();
+        private List<PointLoad> _VerticalLoads = null;
+        public List<PointLoad> VerticalLoads { get; set; }
+
+        private List<PointLoad> _HorizontalLoads = null;
+        public List<PointLoad> HorizontalLoads
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public IResults Results => this;
 
         double IResults.TotalVerticalLoad
         {

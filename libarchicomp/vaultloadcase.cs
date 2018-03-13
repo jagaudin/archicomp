@@ -90,6 +90,7 @@ namespace libarchicomp.vaults
                 if (coord_next >= bound.Min && coord_prev <= bound.Max)
                 {
                     var point = structure.Points.MidSegment[i];
+
                     double min = Max(coord_prev, bound.Min);
                     double max = Min(coord_next, bound.Max);
                     double force_integral;
@@ -115,12 +116,49 @@ namespace libarchicomp.vaults
     }
 
 
-    public class VaultDistributedLoadOverX : VaultDistributedLoad, IDiscretizableLoad<Vault>
+    public class VaultDLoadOverX : VaultDistributedLoad
     {
-        public VaultDistributedLoadOverX(Func<double, Vector3D> load, double start, double end): 
+        public VaultDLoadOverX(Func<double, Vector3D> load, double start, double end) :
             base(load, XAxis, start, end)
         {
         }
+
+        public List<PointLoad> ToProjectedPointLoads(Vault structure)
+        {
+            var res = new List<PointLoad>();
+            res.AddRange(DiscretizeForce(x => Force(x).DotProduct(XAxis), structure, XAxis));
+            res.AddRange(DiscretizeForce(x => Force(x).DotProduct(ZAxis), structure, ZAxis));
+            return res;
+        }
+    }
+
+
+    public class VaultDLoadOverZ : VaultDistributedLoad
+    {
+        public VaultDLoadOverZ(Func<double, Vector3D> load, double start, double end) :
+            base(load, ZAxis, start, end)
+        {
+        }
+
+        public List<PointLoad> ToProjectedPointLoads(Vault structure)
+        {
+            var res = new List<PointLoad>();
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(XAxis), structure, XAxis));
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(ZAxis), structure, ZAxis));
+            return res;
+        }
+    }
+
+    public class VaultDLoadOverXByLength : VaultDistributedLoad, IDiscretizableLoad<Vault>
+    {
+        public VaultDLoadOverXByLength(Func<double, Vector3D> load, double start, double end): 
+            base(load, XAxis, start, end)
+        {
+        }
+
+        string warning =
+            "Loads distributed over axis X applied over length of structure may generate inaccuracies " +
+            "or errors on steep parts of the structure.";
 
         public List<PointLoad> ToProjectedPointLoads(Vault structure)
         {
@@ -131,35 +169,31 @@ namespace libarchicomp.vaults
         }
     }
 
-    public class VaultDistributedLoadOverZ : VaultDistributedLoad
+    public class VaultDLoadOverZByLength : VaultDistributedLoad
     {
-        public VaultDistributedLoadOverZ(Func<double, Vector3D> load, double start, double end) :
+        public VaultDLoadOverZByLength(Func<double, Vector3D> load, double start, double end) :
             base(load, ZAxis, start, end)
         {
         }
 
+        string warning =
+            "Loads distributed over axis Z applied over length of structure may generate inaccuracies " +
+            "or errors on flat parts of the structure.";
+
         public List<PointLoad> ToProjectedPointLoads(Vault structure)
         {
             var res = new List<PointLoad>();
-            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(XAxis) * structure.dLz(z), structure, XAxis)); // TODO: Incorrect dL(z) != dL(x)
-            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(ZAxis) * structure.dLz(z), structure, ZAxis)); // TODO: Incorrect dL(z) != dL(x)
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(XAxis) * structure.dLz(z), structure, XAxis)); 
+            res.AddRange(DiscretizeForce(z => Force(z).DotProduct(ZAxis) * structure.dLz(z), structure, ZAxis)); 
             return res;
         }
     }
 
 
-    public class VaultLoadCase : LoadCase<Vault>, IVaultResults
+    public class VaultLoadCase : DiscreteLoadCase<Vault>, IVaultResults
 	{
-		public VaultLoadCase(IStructure structure) : base(structure)
+		public VaultLoadCase(IStructure structure, List<IDiscretizableLoad<Vault>> loadinput) : base(structure, loadinput)
 		{
-		}
-
-		public IVaultResults Results
-		{
-			get
-			{
-				return this;
-			}
 		}
 
 		double IVaultResults.IntM { get; set; } = 0;

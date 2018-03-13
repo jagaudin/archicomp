@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using MathNet.Numerics;
 using MathNet.Spatial.Euclidean;
+using MathNet.Numerics;
+using MathNet.Numerics.RootFinding;
 
 using libarchicomp.structure;
 using libarchicomp.utils;
@@ -263,15 +264,11 @@ namespace libarchicomp.vaults
 
         public virtual double InvF(double z)
         {
-            if (Math.Abs(z-h) > 1E-3) // TODO Fix arbitrary value
+            if (z > h)
             {
-                return FindRoots.OfFunction(
-                    x => F(x) - z,
-                    0,
-                    w / 2
-                );
+                return 0;
             }
-            return 0;   
+            return Bisection.FindRoot(x => F(x) - z, -Prec, w / 2 + Prec, Prec);
         }
 
         public virtual double DerivInvF(double z)

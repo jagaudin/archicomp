@@ -79,6 +79,24 @@ namespace libarchicomp.vaults
             return -Sinh(x / a);
         }
 
+        public override double InvF(double z)
+        {
+            if (z >= 2)
+            {
+                return 0;
+            }
+            return a * Math.Log((1+(h-z)/a)+Math.Sqrt(Math.Pow(1 + (h - z) / a, 2)-1));
+        }
+
+        public override double DerivInvF(double z)
+        {
+            if (z >= 2)
+            {
+                return double.MinValue;
+            }
+            return - a / Math.Sqrt((h - z) * (2 * a + h -z));
+        }
+
         public override double XToLength(double x)
         {
             return a * (Sinh(w / 2 / a) + Sinh(x / a));
