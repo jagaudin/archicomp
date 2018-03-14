@@ -116,7 +116,7 @@ namespace libarchicomp.vaults
     }
 
 
-    public class VaultDLoadOverX : VaultDistributedLoad
+    public class VaultDLoadOverX : VaultDistributedLoad, IDiscretizableLoad<Vault>
     {
         public VaultDLoadOverX(Func<double, Vector3D> load, double start, double end) :
             base(load, XAxis, start, end)
@@ -133,7 +133,7 @@ namespace libarchicomp.vaults
     }
 
 
-    public class VaultDLoadOverZ : VaultDistributedLoad
+    public class VaultDLoadOverZ : VaultDistributedLoad, IDiscretizableLoad<Vault>
     {
         public VaultDLoadOverZ(Func<double, Vector3D> load, double start, double end) :
             base(load, ZAxis, start, end)
@@ -169,7 +169,7 @@ namespace libarchicomp.vaults
         }
     }
 
-    public class VaultDLoadOverZByLength : VaultDistributedLoad
+    public class VaultDLoadOverZByLength : VaultDistributedLoad, IDiscretizableLoad<Vault>
     {
         public VaultDLoadOverZByLength(Func<double, Vector3D> load, double start, double end) :
             base(load, ZAxis, start, end)
@@ -190,9 +190,9 @@ namespace libarchicomp.vaults
     }
 
 
-    public class VaultLoadCase : DiscreteLoadCase<Vault>, IVaultResults
+    public class VaultLoadCase : DiscreteLoadCase2D<Vault>, IVaultResults
 	{
-		public VaultLoadCase(IStructure structure, List<IDiscretizableLoad<Vault>> loadinput) : base(structure, loadinput)
+		public VaultLoadCase(Vault structure, IEnumerable<IDiscretizableLoad<Vault>> loadinput) : base(structure, loadinput)
 		{
 		}
 
