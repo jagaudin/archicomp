@@ -13,7 +13,7 @@ namespace libarchicomp.vaults
 {
     internal interface ICatenary
     {
-        double a { get; }
+        double A { get; }
         double ComputeCoeff();
     }
 
@@ -25,8 +25,8 @@ namespace libarchicomp.vaults
             double h, 
             double d, 
             double t, 
-            int N, 
-            Restraint restraint) : base(w, h, d, t, N, restraint)
+            int n, 
+            Restraint restraint) : base(w, h, d, t, n, restraint)
         {
         }
 
@@ -36,26 +36,26 @@ namespace libarchicomp.vaults
 
         ICatenary Catenary => this;
 
-        private double _a = double.NaN;
-        public double a
+        private double _A = double.NaN;
+        public double A
         {
             get
             {
-                if (double.IsNaN(_a))
+                if (double.IsNaN(_A))
                 {
-                    _a = Catenary.ComputeCoeff();
+                    _A = Catenary.ComputeCoeff();
                 }
-                return _a;
+                return _A;
             }
         }
 
         double ICatenary.ComputeCoeff()
         // TODO: refine bounds?
         {
-            double[] bound = { w / Scope, w * Scope };
-            Debug.Assert(F(w / 2, bound[0]) * F(w / 2, bound[1]) < 0);
+            double[] bound = { W / Scope, W * Scope };
+            Debug.Assert(F(W / 2, bound[0]) * F(W / 2, bound[1]) < 0);
             return FindRoots.OfFunction(
-                a => F(w / 2, a),
+                a => F(W / 2, a),
                 bound[0],
                 bound[1],
                 Prec
@@ -66,17 +66,17 @@ namespace libarchicomp.vaults
 
         public double F(double x, double a)
         {
-            return h + a * (1 - Cosh(x / a));
+            return H + a * (1 - Cosh(x / a));
         }
 
         public override double F(double x)
         {
-            return F(x, a);
+            return F(x, A);
         }
 
         public override double DerivF(double x)
         {
-            return -Sinh(x / a);
+            return -Sinh(x / A);
         }
 
         public override double InvF(double z)
@@ -85,7 +85,7 @@ namespace libarchicomp.vaults
             {
                 return 0;
             }
-            return a * Math.Log((1+(h-z)/a)+Math.Sqrt(Math.Pow(1 + (h - z) / a, 2)-1));
+            return A * Math.Log((1+(H-z)/A)+Math.Sqrt(Math.Pow(1 + (H - z) / A, 2)-1));
         }
 
         public override double DerivInvF(double z)
@@ -94,40 +94,40 @@ namespace libarchicomp.vaults
             {
                 return double.MinValue;
             }
-            return - a / Math.Sqrt((h - z) * (2 * a + h -z));
+            return - A / Math.Sqrt((H - z) * (2 * A + H -z));
         }
 
         public override double XToLength(double x)
         {
-            return a * (Sinh(w / 2 / a) + Sinh(x / a));
+            return A * (Sinh(W / 2 / A) + Sinh(x / A));
         }
 
         public override double LengthToX(double arcLength)
         {
-            return a * Asinh((arcLength - a * Sinh(w / 2 / a)) / a);
+            return A * Asinh((arcLength - A * Sinh(W / 2 / A)) / A);
         }
 
         /* End methods */
 
         Point3D ICompute.ElasticCenter()
         {
-            double zcoord = ((h + a) * L - a / 2 * (a * Sinh(w / a) + w)) / L;
+            double zcoord = ((H + A) * L - A / 2 * (A * Sinh(W / A) + W)) / L;
             return new Point3D(0, 0, zcoord);
         }
 
         double ICompute.IntXSq()
         {
-            return Math.Pow(w, 2) * L / 4 - 2 * a * (w * (h + a) - a * L);
+            return Math.Pow(W, 2) * L / 4 - 2 * A * (W * (H + A) - A * L);
         }
 
         double ICompute.IntZSq()
         {
             Func<double, double> func = u =>
-                Math.Pow(h + a - u, 2) * L
-                - a * (h + a - u) * (a * Sinh(w / a) + w)
-                + Math.Pow(a, 2) * L
+                Math.Pow(H + A - u, 2) * L
+                - A * (H + A - u) * (A * Sinh(W / A) + W)
+                + Math.Pow(A, 2) * L
                 + Math.Pow(L, 3) / 12;
-            switch (restraint)
+            switch (Restraint)
             {
                 case Restraint.Fixed:
                     double Oz = Points.ElasticCenter.Z;

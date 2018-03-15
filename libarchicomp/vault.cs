@@ -38,26 +38,26 @@ namespace libarchicomp.vaults
 			double h,
 			double d,
 			double t,
-			int N,
+			int n,
 			Restraint restraint
 		)
 		{
-			this.w = w;
-			this.h = h;
-			this.d = d;
-			this.t = t;
-			this.N = N;
-			this.restraint = restraint;
+			W = w;
+			H = h;
+			D = d;
+			T = t;
+			N = n;
+			Restraint = restraint;
 		}
 
 		// Properties
-		public double w { get; private set; }
-		public double h { get; private set; }
-		public double d { get; private set; }
-		public double t { get; private set; }
+		public double W { get; private set; }
+		public double H { get; private set; }
+		public double D { get; private set; }
+		public double T { get; private set; }
 		public int N { get; private set; }
-		public Restraint restraint { get; private set; }
-		public double L { get { return XToLength(w / 2); } }
+		public Restraint Restraint { get; private set; }
+		public double L { get { return XToLength(W / 2); } }
 
 		protected double Prec { get { return Constants.Prec; } }
 
@@ -74,7 +74,7 @@ namespace libarchicomp.vaults
             {
                 if (_Start.IsNaN())
                 {
-                    _Start = new Point3D(-w / 2, 0, 0);
+                    _Start = new Point3D(-W / 2, 0, 0);
                 }
                 return _Start;
             }
@@ -87,7 +87,7 @@ namespace libarchicomp.vaults
             {
                 if (_End.IsNaN())
                 {
-                    _End = new Point3D(-w / 2, 0, 0);
+                    _End = new Point3D(-W / 2, 0, 0);
                 }
                 return _End;
             }
@@ -110,14 +110,14 @@ namespace libarchicomp.vaults
         {
             double xcoord = Integrate.OnClosedInterval(
                 x => x * dL(x) / L,
-                -w / 2,
-                w / 2,
+                -W / 2,
+                W / 2,
                 Prec
             );
             double zcoord = Integrate.OnClosedInterval(
                 x => F(x) * dL(x) / L,
-                -w / 2,
-                w / 2,
+                -W / 2,
+                W / 2,
                 Prec
             );
             return new Point3D(xcoord, 0, zcoord);
@@ -201,7 +201,7 @@ namespace libarchicomp.vaults
         double ICompute.IntXSq()
         {
             Func<double, double> func;
-            switch (restraint)
+            switch (Restraint)
             {
                 case Restraint.Fixed:
                     double Ox = Points.ElasticCenter.X;
@@ -216,7 +216,7 @@ namespace libarchicomp.vaults
                     var msg = "Restraint is unknown";
                     throw new InvalidOperationException(msg);
             }
-            return Integrate.OnClosedInterval(func, -w / 2, w / 2, Prec);
+            return Integrate.OnClosedInterval(func, -W / 2, W / 2, Prec);
         }
 
         private double _ZSq = double.NaN;
@@ -235,7 +235,7 @@ namespace libarchicomp.vaults
         double ICompute.IntZSq()
         {
             Func<double, double> func;
-            switch (restraint)
+            switch (Restraint)
             {
                 case Restraint.Fixed:
                     double Oz = Points.ElasticCenter.Z;
@@ -250,7 +250,7 @@ namespace libarchicomp.vaults
                     var msg = "Restraint is unknown";
                     throw new InvalidOperationException(msg);
             }
-            return Integrate.OnClosedInterval(func, -w / 2, w / 2, Prec);
+            return Integrate.OnClosedInterval(func, -W / 2, W / 2, Prec);
         }
 
 
@@ -264,11 +264,11 @@ namespace libarchicomp.vaults
 
         public virtual double InvF(double z)
         {
-            if (z > h)
+            if (z > H)
             {
                 return 0;
             }
-            return Bisection.FindRoot(x => F(x) - z, -Prec, w / 2 + Prec, Prec);
+            return Bisection.FindRoot(x => F(x) - z, -Prec, W / 2 + Prec, Prec);
         }
 
         public virtual double DerivInvF(double z)
@@ -278,15 +278,15 @@ namespace libarchicomp.vaults
 
         public virtual double XToLength(double x)
         {
-            return Integrate.OnClosedInterval(dL, -w / 2, x);
+            return Integrate.OnClosedInterval(dL, -W / 2, x);
         }
 
         public virtual double LengthToX(double arcLength)
         {
             return FindRoots.OfFunction(
                 x => XToLength(x) - arcLength, 
-                -w / 2, 
-                w / 2
+                -W / 2, 
+                W / 2
             );
         }
 
