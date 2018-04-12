@@ -46,7 +46,9 @@ namespace libarchicomp.loadcase
 
         public double Prec => Constants.Prec;
 
-        public override string ToString() => (string.Format("Loc: {0}, Force: {1}", Loc.ToString(), Force.ToString()));
+        public override string ToString() => (
+            string.Format("Loc: {0}, Force: {1}", Loc.ToString(), Force.ToString())
+        );
     }
 
 

@@ -203,5 +203,10 @@ namespace libarchicomp.vaults
 		double IVaultResults.IntMy { get; set; } = 0;
 
 		double IVaultResults.SumMb { get; set; } = 0;
+
+        public void integrate()
+        {
+
+        }
 	}
 }
